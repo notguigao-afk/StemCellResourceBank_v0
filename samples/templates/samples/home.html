@@ -1,0 +1,172 @@
+{% extends 'samples/base.html' %}
+
+{% block title %}Home - Stem Cell Resource Bank{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="display-3 fw-bold mb-4">
+                    Welcome to the<br>
+                    <span style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        Stem Cell Resource Bank
+                    </span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    A comprehensive platform for managing and disseminating stem cell samples. 
+                    Empowering research through organized resource management.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'public_sample_list' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-search"></i> Browse Samples
+                    </a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Staff Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-5 text-center">
+                <i class="bi bi-droplet-fill" style="font-size: 15rem; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <i class="bi bi-flask-fill" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ total_samples }}</h3>
+                <p class="mb-0">Total Samples</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card text-center" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">{{ available_samples }}</h3>
+                <p class="mb-0">Available Samples</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card text-center" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <i class="bi bi-people-fill" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">Public</h3>
+                <p class="mb-0">Access Level</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5 fw-bold">Key Features</h2>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-database-fill text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Comprehensive Database</h5>
+                    <p class="card-text text-muted">Store detailed information about each stem cell sample</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-shield-lock-fill text-success" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Role-Based Access</h5>
+                    <p class="card-text text-muted">Different access levels for admin, staff, and public</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-eye-fill text-info" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Public Dissemination</h5>
+                    <p class="card-text text-muted">Read-only public view for research collaboration</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-search text-warning" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Advanced Search</h5>
+                    <p class="card-text text-muted">Filter and search samples by multiple criteria</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Samples Section -->
+{% if recent_samples %}
+<div class="container my-5">
+    <h2 class="text-center mb-5 fw-bold">Recently Added Samples</h2>
+    <div class="row g-4">
+        {% for sample in recent_samples %}
+        <div class="col-md-4">
+            <div class="card h-100">
+                {% if sample.image %}
+                <img src="{{ sample.image.url }}" class="card-img-top" alt="{{ sample.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" 
+                     style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="bi bi-flask-fill text-white" style="font-size: 4rem;"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ sample.name }}</h5>
+                    <p class="card-text text-muted">
+                        <small><strong>ID:</strong> {{ sample.sample_id }}</small><br>
+                        <small><strong>Type:</strong> {{ sample.get_sample_type_display }}</small>
+                    </p>
+                    <span class="badge bg-{{ sample.get_status_badge_class }}">
+                        {{ sample.get_status_display }}
+                    </span>
+                    <a href="{% url 'public_sample_detail' sample.pk %}" class="btn btn-sm btn-outline-primary mt-2">
+                        <i class="bi bi-eye"></i> View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'public_sample_list' %}" class="btn btn-primary">View All Samples</a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Call to Action -->
+<div class="bg-white py-5 mt-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Ready to Get Started?</h2>
+        <p class="lead text-muted mb-4">
+            Browse our collection of stem cell samples or log in to manage resources.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'public_sample_list' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-search"></i> Browse Samples
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-flask"></i> Manage Samples
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-box-arrow-in-right"></i> Staff Login
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

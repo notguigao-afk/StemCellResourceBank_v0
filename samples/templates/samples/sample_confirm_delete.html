@@ -1,0 +1,55 @@
+{% extends 'samples/base.html' %}
+
+{% block title %}Delete Sample - Stem Cell Resource Bank{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Confirm Deletion
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        {% if sample.image %}
+                        <img src="{{ sample.image.url }}" alt="{{ sample.name }}" class="img-thumbnail mb-3" style="max-height: 150px;">
+                        {% else %}
+                        <i class="bi bi-flask-fill text-muted" style="font-size: 5rem;"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <h5 class="text-center mb-3">Are you sure you want to delete this sample?</h5>
+                    
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <strong>Warning:</strong> This action cannot be undone. All sample data will be permanently deleted.
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Sample ID:</strong> {{ sample.sample_id }}</p>
+                            <p class="mb-2"><strong>Name:</strong> {{ sample.name }}</p>
+                            <p class="mb-2"><strong>Type:</strong> {{ sample.get_sample_type_display }}</p>
+                            <p class="mb-0"><strong>Storage Location:</strong> {{ sample.storage_location }}</p>
+                        </div>
+                    </div>
+                    
+                    <form method="post" class="d-grid gap-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash-fill"></i> Yes, Delete Sample
+                        </button>
+                        <a href="{% url 'sample_detail' sample.pk %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

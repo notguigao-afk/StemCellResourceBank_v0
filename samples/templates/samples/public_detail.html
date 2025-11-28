@@ -1,0 +1,177 @@
+{% extends 'samples/base.html' %}
+
+{% block title %}{{ sample.name }} - Stem Cell Resource Bank{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'public_sample_list' %}">Public Samples</a></li>
+            <li class="breadcrumb-item active">{{ sample.sample_id }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                {% if sample.image %}
+                <img src="{{ sample.image.url }}" class="card-img-top" alt="{{ sample.name }}">
+                {% else %}
+                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" 
+                     style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="bi bi-flask-fill text-white" style="font-size: 6rem;"></i>
+                </div>
+                {% endif %}
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ sample.name }}</h4>
+                    <p class="text-muted">{{ sample.sample_id }}</p>
+                    <span class="badge bg-{{ sample.get_status_badge_class }} fs-6">
+                        {{ sample.get_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle-fill"></i> Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Sample Type:</strong><br>
+                            <span class="text-muted">{{ sample.get_sample_type_display }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Status:</strong><br>
+                            <span class="badge bg-{{ sample.get_status_badge_class }}">
+                                {{ sample.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Quantity:</strong><br>
+                            <span class="text-muted">{{ sample.quantity }} vial{{ sample.quantity|pluralize }}</span>
+                        </div>
+                        {% if sample.passage_number %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Passage Number:</strong><br>
+                            <span class="text-muted">{{ sample.passage_number }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="col-12">
+                            <strong>Description:</strong><br>
+                            <p class="text-muted">{{ sample.description|default:"No description available" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-geo-alt-fill"></i> Source & Storage</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if sample.source %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Source:</strong><br>
+                            <span class="text-muted">{{ sample.source }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Storage Location:</strong><br>
+                            <span class="text-muted">{{ sample.storage_location }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-calendar-fill"></i> Important Dates</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if sample.collection_date %}
+                        <div class="col-md-4 mb-3">
+                            <strong>Collection Date:</strong><br>
+                            <span class="text-muted">{{ sample.collection_date|date:"M d, Y" }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-4 mb-3">
+                            <strong>Storage Date:</strong><br>
+                            <span class="text-muted">{{ sample.storage_date|date:"M d, Y" }}</span>
+                        </div>
+                        {% if sample.expiration_date %}
+                        <div class="col-md-4 mb-3">
+                            <strong>Expiration Date:</strong><br>
+                            <span class="text-muted">{{ sample.expiration_date|date:"M d, Y" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            {% if sample.viability or sample.quality_control_notes %}
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-check-fill"></i> Quality Information</h5>
+                </div>
+                <div class="card-body">
+                    {% if sample.viability %}
+                    <div class="mb-3">
+                        <strong>Viability:</strong><br>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" 
+                                 role="progressbar" 
+                                 style="width: {{ sample.viability }}%"
+                                 aria-valuenow="{{ sample.viability }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ sample.viability }}%
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if sample.quality_control_notes %}
+                    <div>
+                        <strong>Quality Control Notes:</strong><br>
+                        <p class="text-muted">{{ sample.quality_control_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-shield-check-fill"></i> Additional Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Research Use Only:</strong>
+                        {% if sample.research_use_only %}
+                        <span class="badge bg-warning">Yes</span>
+                        {% else %}
+                        <span class="badge bg-success">No</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <strong>Added:</strong>
+                        <span class="text-muted">{{ sample.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'public_sample_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Samples
+        </a>
+    </div>
+</div>
+{% endblock %}
+
