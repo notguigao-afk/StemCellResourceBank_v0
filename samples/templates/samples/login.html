@@ -1,5 +1,5 @@
 {% extends 'samples/base.html' %}
-{% load i18n %}
+{% load i18n sample_tags %}
 {% get_current_language as CURRENT_LANGUAGE %}
 
 {% block title %}{% trans "Login" %} - {{ site_name }}{% endblock %}
@@ -70,10 +70,7 @@
             <div class="login-footer">
                 <div class="dropdown">
                     <button class="btn btn-link dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-globe me-1"></i>
-                        {% if CURRENT_LANGUAGE == 'zh-Hant' %}繁體中文
-                        {% elif CURRENT_LANGUAGE == 'zh-Hans' %}简体中文
-                        {% else %}English{% endif %}
+                        <i class="bi bi-globe me-1"></i>{% get_language_display CURRENT_LANGUAGE %}
                     </button>
                     <ul class="dropdown-menu">
                         <li>
@@ -81,7 +78,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="language" value="en">
                                 <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit" class="dropdown-item {% if CURRENT_LANGUAGE == 'en' %}active{% endif %}">English</button>
+                                <button type="submit" class="dropdown-item {% is_language CURRENT_LANGUAGE 'en' as is_en %}{% if is_en %}active{% endif %}">English</button>
                             </form>
                         </li>
                         <li>
@@ -89,7 +86,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="language" value="zh-Hant">
                                 <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit" class="dropdown-item {% if CURRENT_LANGUAGE == 'zh-Hant' %}active{% endif %}">繁體中文</button>
+                                <button type="submit" class="dropdown-item {% is_language CURRENT_LANGUAGE 'zh-Hant' as is_hant %}{% if is_hant %}active{% endif %}">繁體中文</button>
                             </form>
                         </li>
                         <li>
@@ -97,7 +94,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="language" value="zh-Hans">
                                 <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit" class="dropdown-item {% if CURRENT_LANGUAGE == 'zh-Hans' %}active{% endif %}">简体中文</button>
+                                <button type="submit" class="dropdown-item {% is_language CURRENT_LANGUAGE 'zh-Hans' as is_hans %}{% if is_hans %}active{% endif %}">简体中文</button>
                             </form>
                         </li>
                     </ul>
