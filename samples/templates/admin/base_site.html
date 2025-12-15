@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block userlinks %}
+    {% get_current_language as CURRENT_LANGUAGE %}
+    <span style="margin-right: 15px;">
+        <form action="{% url 'set_language' %}" method="post" style="display: inline;" id="lang-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <select name="language" onchange="this.form.submit()" id="lang-select" style="padding: 2px 5px; border-radius: 3px; border: 1px solid #ccc; background: #fff; cursor: pointer;">
+                <option value="en">English</option>
+                <option value="zh-Hant">繁體中文</option>
+                <option value="zh-Hans">简体中文</option>
+            </select>
+        </form>
+    </span>
+    <script>
+        (function() {
+            var currentLang = "{{ CURRENT_LANGUAGE }}".toLowerCase();
+            var select = document.getElementById('lang-select');
+            if (currentLang.indexOf('hant') !== -1) {
+                select.value = 'zh-Hant';
+            } else if (currentLang.indexOf('hans') !== -1) {
+                select.value = 'zh-Hans';
+            } else {
+                select.value = 'en';
+            }
+        })();
+    </script>
+    {{ block.super }}
+{% endblock %}
