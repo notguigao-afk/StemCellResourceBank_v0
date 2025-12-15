@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 from .models import Sample, SiteSettings
 
@@ -48,6 +49,50 @@ class SampleAdmin(SimpleHistoryAdmin):
         if not change:  # If creating a new object
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
+
+# Register the Historical Sample model for viewing ALL history including deleted samples
+from samples.models import Sample
+HistoricalSample = Sample.history.model
+
+@admin.register(HistoricalSample)
+class HistoricalSampleAdmin(admin.ModelAdmin):
+    """Admin view for all sample history including deleted samples"""
+    list_display = (
+        'sample_id',
+        'name',
+        'history_type_display',
+        'history_user',
+        'history_date',
+    )
+    list_filter = ('history_type', 'sample_type', 'status', 'history_date')
+    search_fields = ('sample_id', 'name', 'description')
+    readonly_fields = [field.name for field in HistoricalSample._meta.fields]
+    ordering = ('-history_date',)
+    
+    def history_type_display(self, obj):
+        """Display history type with color coding"""
+        type_map = {
+            '+': ('Created', 'green'),
+            '~': ('Modified', 'orange'),
+            '-': ('Deleted', 'red'),
+        }
+        label, color = type_map.get(obj.history_type, ('Unknown', 'gray'))
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{}</span>',
+            color, label
+        )
+    history_type_display.short_description = 'Action'
+    history_type_display.admin_order_field = 'history_type'
+    
+    def has_add_permission(self, request):
+        return False  # Cannot add history manually
+    
+    def has_change_permission(self, request, obj=None):
+        return False  # Cannot edit history
+    
+    def has_delete_permission(self, request, obj=None):
+        return False  # Cannot delete history (audit trail!)
 
 
 @admin.register(SiteSettings)

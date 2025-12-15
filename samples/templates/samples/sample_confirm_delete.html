@@ -19,9 +19,9 @@
                     Are you sure you want to delete sample <strong>{{ sample_id }}</strong> ({{ sample_name }})?
                     {% endblocktrans %}
                 </p>
-                <p class="text-danger small mb-4">
-                    <i class="bi bi-exclamation-circle me-1"></i>
-                    {% trans "This action cannot be undone. All history for this sample will also be deleted." %}
+                <p class="text-warning small mb-4">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {% trans "This action cannot be undone. However, the deletion will be recorded in the audit history and admins can view it in the admin panel." %}
                 </p>
                 
                 <form method="post">

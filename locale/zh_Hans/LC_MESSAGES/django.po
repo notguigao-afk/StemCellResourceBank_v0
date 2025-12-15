@@ -393,6 +393,9 @@ msgstr "确认删除"
 msgid "This action cannot be undone. All history for this sample will also be deleted."
 msgstr "此操作无法撤销。该样本的所有历史记录也将被删除。"
 
+msgid "This action cannot be undone. However, the deletion will be recorded in the audit history and admins can view it in the admin panel."
+msgstr "此操作无法撤销。但删除操作将记录在审计历史中，管理员可在后台查看。"
+
 # Export
 msgid "Export Samples"
 msgstr "导出样本"
