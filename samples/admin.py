@@ -1,9 +1,10 @@
 from django.contrib import admin
-from .models import Sample
+from simple_history.admin import SimpleHistoryAdmin
+from .models import Sample, SiteSettings
 
 
 @admin.register(Sample)
-class SampleAdmin(admin.ModelAdmin):
+class SampleAdmin(SimpleHistoryAdmin):
     list_display = (
         'sample_id', 
         'name', 
@@ -47,3 +48,15 @@ class SampleAdmin(admin.ModelAdmin):
         if not change:  # If creating a new object
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'updated_at')
+    
+    def has_add_permission(self, request):
+        # Only allow one instance
+        return not SiteSettings.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        return False

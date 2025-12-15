@@ -1,6 +1,7 @@
-# Stem Cell Resource Bank
+# 香港細胞及幹細胞資源中心庫存管理系統
+# Inventory Management System of Hong Kong Cell and Stem Cell Resource Center
 
-A comprehensive Django web application for managing stem cell samples with role-based access control and public dissemination capabilities.
+A comprehensive Django web application for managing stem cell sample inventory with role-based access control, audit trails, and multilingual support.
 
 ## Features
 
@@ -12,7 +13,7 @@ A comprehensive Django web application for managing stem cell samples with role-
   - Quantity and passage number
   - Important dates (collection, storage, expiration)
   - Quality control data (viability, QC notes)
-  - Sample images
+  - Sample images (automatically compressed to save storage)
   - Research use restrictions
 
 ### 2. Role-Based Access Control
@@ -20,6 +21,7 @@ A comprehensive Django web application for managing stem cell samples with role-
   - Full access to Django admin panel
   - Can manage all samples
   - Can manage users and groups
+  - Can edit site settings (logo, site name)
   - Access to all staff features
 
 - **Lab Staff**: Sample management capabilities
@@ -28,28 +30,39 @@ A comprehensive Django web application for managing stem cell samples with role-
   - Remove samples from the bank
   - View all sample details
   - Search and filter samples
+  - Export samples to Excel
 
-- **Public (Unauthenticated)**: Read-only access
-  - Browse all samples
-  - View sample details
-  - Search and filter samples
-  - No edit or delete capabilities
+### 3. Dashboard
+- Real-time statistics overview
+- Recently modified samples
+- Samples expiring soon alerts
+- Low stock warnings
+- Quick actions
 
-### 3. Modern User Interface
-- Beautiful, responsive design using Bootstrap 5
-- Gradient color schemes and smooth animations
-- Intuitive navigation and user experience
-- Mobile-friendly responsive layout
-- Advanced search and filtering capabilities
-- Visual status badges and indicators
+### 4. Multilingual Support (i18n)
+- English
+- Traditional Chinese (繁體中文)
+- Simplified Chinese (简体中文)
+- Easy language switching via dropdown
 
-### 4. Additional Features
-- Image upload for samples
-- Advanced search functionality
-- Filter by sample type and status
-- Automatic timestamp tracking
-- User activity tracking (who created samples)
-- Quality control progress visualization
+### 5. Audit Trail
+- Complete history tracking for all samples
+- View who changed what and when
+- Compare changes between versions
+- History tab on each sample detail page
+
+### 6. Export Functionality
+- Export to Excel (.xlsx)
+- Select specific columns to export
+- Export filtered or selected samples
+- Styled Excel output with headers
+
+### 7. Modern User Interface
+- Clean, professional dashboard design
+- Responsive sidebar navigation
+- Mobile-friendly layout
+- Beautiful login page
+- Customizable site logo and name
 
 ## Installation & Setup
 
@@ -79,18 +92,31 @@ A comprehensive Django web application for managing stem cell samples with role-
    pip install -r requirements.txt
    ```
 
-4. **Run database migrations**:
+4. **Set up environment variables** (optional but recommended for production):
+   Create a `.env` file in the project root:
+   ```
+   SECRET_KEY=your-secret-key-here
+   DEBUG=False
+   ALLOWED_HOSTS=your-domain.pythonanywhere.com,localhost
+   ```
+
+5. **Run database migrations**:
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-5. **Set up user groups** (Lab Staff permissions):
+6. **Compile translation files**:
+   ```bash
+   python manage.py compilemessages
+   ```
+
+7. **Set up user groups** (Lab Staff permissions):
    ```bash
    python manage.py setup_groups
    ```
 
-6. **Create demo data** (optional but recommended for testing):
+8. **Create demo data** (optional but recommended for testing):
    ```bash
    python manage.py create_demo_data
    ```
@@ -99,56 +125,56 @@ A comprehensive Django web application for managing stem cell samples with role-
    - Lab staff user (username: `labstaff`, password: `staff123`)
    - 6 sample stem cell samples with realistic data
 
-7. **Create a superuser** (if not using demo data):
+9. **Create a superuser** (if not using demo data):
    ```bash
    python manage.py createsuperuser
    ```
 
-8. **Run the development server**:
-   ```bash
-   python manage.py runserver
-   ```
+10. **Run the development server**:
+    ```bash
+    python manage.py runserver
+    ```
 
-9. **Access the application**:
-   - Main site: http://localhost:8000/
-   - Admin panel: http://localhost:8000/admin/
-   - Public samples: http://localhost:8000/public/
-   - Sample management: http://localhost:8000/samples/ (requires login)
+11. **Access the application**:
+    - Login page: http://localhost:8000/
+    - Dashboard: http://localhost:8000/dashboard/
+    - Samples: http://localhost:8000/samples/
+    - Admin panel: http://localhost:8000/admin/
+    - Site settings: http://localhost:8000/settings/
 
 ## Usage Guide
 
-### For Public Users
-1. Visit the homepage at http://localhost:8000/
-2. Click "Browse Samples" to view all available samples
-3. Use search and filters to find specific samples
-4. Click on any sample to view detailed information
-5. No login required for browsing
-
 ### For Lab Staff
-1. Click "Staff Login" in the navigation menu
-2. Log in with your lab staff credentials
-3. Navigate to "Manage Samples" to view all samples
-4. Click "Add New Sample" to add a new sample
-5. Use the search and filter tools to find samples
-6. Click on a sample to view full details
-7. Use Edit/Delete buttons to modify or remove samples
+1. Go to the login page at http://localhost:8000/
+2. Log in with your credentials
+3. View the dashboard for overview and recent activity
+4. Navigate to "Samples" to view all samples
+5. Click "Add Sample" to create a new sample
+6. Use search and filter tools to find samples
+7. Click on a sample to view details and history
+8. Use Export button to download samples as Excel
 
 ### For Administrators
-1. Log in at http://localhost:8000/admin/ with admin credentials
-2. Access the full Django admin interface
-3. Manage users, groups, and permissions
-4. Perform all lab staff functions plus:
+1. Log in with admin credentials
+2. Access all Lab Staff functions plus:
+   - Visit "Site Settings" to update logo and site names
+   - Access Django admin panel for user management
    - Create and manage user accounts
    - Assign users to Lab Staff group
-   - Configure system settings
-   - Bulk operations on samples
+
+### Changing Language
+- Click the language dropdown in the sidebar (globe icon)
+- Select your preferred language:
+  - English
+  - 繁體中文 (Traditional Chinese)
+  - 简体中文 (Simplified Chinese)
 
 ## Project Structure
 
 ```
 StemCellResourceBank_v0/
 ├── config/                 # Django project settings
-│   ├── settings.py        # Main settings file
+│   ├── settings.py        # Main settings (with i18n config)
 │   ├── urls.py            # Root URL configuration
 │   └── wsgi.py            # WSGI configuration
 ├── samples/               # Main application
@@ -158,80 +184,58 @@ StemCellResourceBank_v0/
 │   │       └── create_demo_data.py  # Create demo data
 │   ├── templates/         # HTML templates
 │   │   └── samples/
-│   │       ├── base.html             # Base template
-│   │       ├── home.html             # Homepage
-│   │       ├── login.html            # Login page
-│   │       ├── public_list.html      # Public sample list
-│   │       ├── public_detail.html    # Public sample detail
-│   │       ├── sample_list.html      # Staff sample list
-│   │       ├── sample_detail.html    # Staff sample detail
-│   │       ├── sample_form.html      # Add/Edit form
-│   │       └── sample_confirm_delete.html  # Delete confirmation
-│   ├── admin.py           # Admin panel configuration
-│   ├── forms.py           # Django forms
-│   ├── models.py          # Database models
+│   │       ├── base.html              # Base template with sidebar
+│   │       ├── login.html             # Login page
+│   │       ├── home.html              # Dashboard
+│   │       ├── sample_list.html       # Sample list with export
+│   │       ├── sample_detail.html     # Sample detail with history
+│   │       ├── sample_form.html       # Add/Edit form
+│   │       ├── sample_confirm_delete.html
+│   │       └── site_settings.html     # Site configuration
+│   ├── templatetags/      # Custom template tags
+│   │   └── sample_tags.py
+│   ├── admin.py           # Admin panel with history
+│   ├── context_processors.py  # Site settings context
+│   ├── forms.py           # Django forms with validation
+│   ├── models.py          # Database models with history
 │   ├── urls.py            # App URL configuration
 │   └── views.py           # View functions
-├── static/                # Static files (CSS, JS, images)
+├── locale/                # Translation files
+│   ├── zh_Hant/          # Traditional Chinese
+│   └── zh_Hans/          # Simplified Chinese
+├── static/                # Static files
 ├── media/                 # User-uploaded files
 ├── requirements.txt       # Python dependencies
 └── manage.py             # Django management script
 ```
 
-## Database Models
+## PythonAnywhere Deployment
 
-### Sample Model
-The main model storing stem cell sample information with the following fields:
+### Storage Considerations
+- Free tier: 512 MB disk space
+- Sample images are automatically compressed (max 500KB each)
+- Consider upgrading to Hacker plan ($5/month) for 1GB
+- Alternative: Use Cloudinary for media storage (free tier: 25GB)
 
-**Basic Information:**
-- `sample_id`: Unique identifier (e.g., IPSC-2024-001)
-- `name`: Sample name
-- `sample_type`: Type of stem cell (iPSC, ESC, MSC, HSC, NSC, Other)
-- `description`: Detailed description
-
-**Source & Storage:**
-- `source`: Source institution or lab
-- `donor_info`: Donor information and consent details
-- `storage_location`: Physical storage location
-
-**Status & Quantity:**
-- `status`: Current status (Available, In Use, Depleted, Reserved, Quarantine)
-- `quantity`: Number of vials
-- `passage_number`: Cell passage number
-
-**Dates:**
-- `collection_date`: When sample was collected
-- `storage_date`: When sample was stored
-- `expiration_date`: Sample expiration date
-
-**Quality Control:**
-- `viability`: Cell viability percentage
-- `quality_control_notes`: QC test results and notes
-
-**Additional:**
-- `research_use_only`: Boolean flag
-- `image`: Sample image
-- `created_by`: User who created the record
-- `created_at`: Creation timestamp
-- `updated_at`: Last update timestamp
+### Deployment Steps
+1. Upload project to PythonAnywhere
+2. Create virtual environment and install dependencies
+3. Set environment variables in `.env`
+4. Configure WSGI file
+5. Set up static and media file serving
+6. Run migrations and create superuser
 
 ## Security & Permissions
 
 ### Authentication
+- All pages require login (no public access)
 - Django's built-in authentication system
 - Password hashing and security
 - Session-based authentication
 
 ### Authorization Levels
-1. **Anonymous Users**: Read-only public access
-2. **Lab Staff Group**: Full CRUD operations on samples
-3. **Superusers**: Full system access including admin panel
-
-### Permission Checks
-- View decorators enforce authentication
-- `@login_required` for staff-only pages
-- `@user_passes_test` for permission verification
-- Public views accessible without authentication
+1. **Lab Staff Group**: Full CRUD on samples, export capability
+2. **Superusers**: Full access including site settings and admin panel
 
 ## Customization
 
@@ -239,58 +243,28 @@ The main model storing stem cell sample information with the following fields:
 Edit `samples/models.py`, modify the `SAMPLE_TYPE_CHOICES`:
 ```python
 SAMPLE_TYPE_CHOICES = [
-    ('IPSC', 'Induced Pluripotent Stem Cell'),
-    ('ESC', 'Embryonic Stem Cell'),
+    ('IPSC', _('Induced Pluripotent Stem Cell')),
     # Add your new type here
-    ('NEW_TYPE', 'New Type Description'),
+    ('NEW_TYPE', _('New Type Description')),
 ]
 ```
 
-### Changing Status Options
-Edit `samples/models.py`, modify the `STATUS_CHOICES`:
-```python
-STATUS_CHOICES = [
-    ('AVAILABLE', 'Available'),
-    # Add your new status here
-    ('NEW_STATUS', 'New Status'),
-]
-```
+### Updating Translations
+1. Edit `.po` files in `locale/zh_Hant/LC_MESSAGES/` and `locale/zh_Hans/LC_MESSAGES/`
+2. Run `python manage.py compilemessages`
 
-### Customizing the UI
-- Edit templates in `samples/templates/samples/`
-- Modify CSS in `samples/templates/samples/base.html` (inline styles)
-- Add custom CSS files in `static/css/`
+### Customizing Site Branding
+1. Log in as admin
+2. Go to Site Settings
+3. Upload logo and edit site names for each language
 
-## Management Commands
+## Dependencies
 
-### Setup Groups
-```bash
-python manage.py setup_groups
-```
-Creates the Lab Staff group with appropriate permissions.
-
-### Create Demo Data
-```bash
-python manage.py create_demo_data
-```
-Populates the database with:
-- Sample users (admin and lab staff)
-- Sample stem cell records
-
-## Deployment Considerations
-
-For production deployment, remember to:
-
-1. **Change SECRET_KEY** in `config/settings.py`
-2. **Set DEBUG = False** in `config/settings.py`
-3. **Configure ALLOWED_HOSTS** appropriately
-4. **Use a production database** (PostgreSQL, MySQL)
-5. **Collect static files**: `python manage.py collectstatic`
-6. **Use a proper web server** (Gunicorn, uWSGI with Nginx)
-7. **Set up HTTPS/SSL** certificates
-8. **Configure media file serving**
-9. **Set up proper backup procedures**
-10. **Review security settings** using `python manage.py check --deploy`
+- Django 4.2 - Web framework
+- Pillow - Image processing and compression
+- django-simple-history - Audit trail
+- openpyxl - Excel export
+- python-decouple - Environment variables
 
 ## Troubleshooting
 
@@ -305,36 +279,22 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+### Translation not working
+```bash
+python manage.py compilemessages
+```
+
 ### Permission denied errors
 Make sure Lab Staff group is created:
 ```bash
 python manage.py setup_groups
 ```
 
-### Cannot login
-Reset user password:
-```bash
-python manage.py changepassword username
-```
-
-## Support & Contributing
-
-For issues, questions, or contributions, please refer to the project's issue tracker or contact the development team.
-
 ## License
 
 This project is created for research and educational purposes.
 
-## Acknowledgments
-
-Built with:
-- Django 4.2 - Web framework
-- Bootstrap 5 - UI framework
-- Bootstrap Icons - Icon library
-- SQLite - Database (development)
-
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: November 2025
-
+**Version**: 2.0.0  
+**Last Updated**: December 2025

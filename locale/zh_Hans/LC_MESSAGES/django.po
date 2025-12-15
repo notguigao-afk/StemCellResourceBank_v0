@@ -1,0 +1,473 @@
+# Simplified Chinese translations for Stem Cell Resource Bank
+# 简体中文翻译
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-hans\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# Authentication
+msgid "Login"
+msgstr "登录"
+
+msgid "Please sign in to continue"
+msgstr "请登录以继续"
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "Enter your username"
+msgstr "输入您的用户名"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Enter your password"
+msgstr "输入您的密码"
+
+msgid "Sign In"
+msgstr "登录"
+
+msgid "Logout"
+msgstr "登出"
+
+msgid "Welcome back, %(username)s!"
+msgstr "欢迎回来，%(username)s！"
+
+msgid "Invalid username or password."
+msgstr "用户名或密码错误。"
+
+msgid "You have been logged out successfully."
+msgstr "您已成功登出。"
+
+# Navigation
+msgid "Dashboard"
+msgstr "控制台"
+
+msgid "Samples"
+msgstr "样本"
+
+msgid "Add Sample"
+msgstr "新增样本"
+
+msgid "Administration"
+msgstr "管理"
+
+msgid "Site Settings"
+msgstr "网站设置"
+
+msgid "Admin Panel"
+msgstr "管理后台"
+
+# Dashboard
+msgid "Total Samples"
+msgstr "样本总数"
+
+msgid "Available"
+msgstr "可用"
+
+msgid "In Use"
+msgstr "使用中"
+
+msgid "Depleted"
+msgstr "已耗尽"
+
+msgid "Reserved"
+msgstr "已预留"
+
+msgid "Quarantine"
+msgstr "隔离中"
+
+msgid "Recently Modified"
+msgstr "最近更新"
+
+msgid "View All"
+msgstr "查看全部"
+
+msgid "Samples by Type"
+msgstr "按类型分类"
+
+msgid "Expiring Soon"
+msgstr "即将过期"
+
+msgid "Low Stock"
+msgstr "库存不足"
+
+msgid "Quick Actions"
+msgstr "快速操作"
+
+msgid "Export"
+msgstr "导出"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "ago"
+msgstr "前"
+
+msgid "vials"
+msgstr "瓶"
+
+msgid "No recent activity"
+msgstr "无最近活动"
+
+msgid "No samples yet"
+msgstr "暂无样本"
+
+msgid "No samples expiring soon"
+msgstr "无即将过期的样本"
+
+msgid "All samples well stocked"
+msgstr "所有样本库存充足"
+
+# Sample Management
+msgid "Sample Management"
+msgstr "样本管理"
+
+msgid "All Samples"
+msgstr "所有样本"
+
+msgid "Search samples..."
+msgstr "搜索样本..."
+
+msgid "All Types"
+msgstr "所有类型"
+
+msgid "All Status"
+msgstr "所有状态"
+
+msgid "Filter"
+msgstr "筛选"
+
+msgid "Sample ID"
+msgstr "样本编号"
+
+msgid "Sample Name"
+msgstr "样本名称"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Quantity"
+msgstr "数量"
+
+msgid "Location"
+msgstr "位置"
+
+msgid "Updated"
+msgstr "更新时间"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "View"
+msgstr "查看"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "No samples found"
+msgstr "未找到样本"
+
+msgid "Try adjusting your search or filter criteria"
+msgstr "请尝试调整搜索或筛选条件"
+
+msgid "Add First Sample"
+msgstr "新增第一个样本"
+
+# Sample Types
+msgid "Induced Pluripotent Stem Cell"
+msgstr "诱导性多能干细胞"
+
+msgid "Embryonic Stem Cell"
+msgstr "胚胎干细胞"
+
+msgid "Mesenchymal Stem Cell"
+msgstr "间充质干细胞"
+
+msgid "Hematopoietic Stem Cell"
+msgstr "造血干细胞"
+
+msgid "Neural Stem Cell"
+msgstr "神经干细胞"
+
+msgid "Other"
+msgstr "其他"
+
+# Sample Details
+msgid "Sample Details"
+msgstr "样本详情"
+
+msgid "Information"
+msgstr "信息"
+
+msgid "History"
+msgstr "历史记录"
+
+msgid "Basic Information"
+msgstr "基本信息"
+
+msgid "Passage Number"
+msgstr "传代数"
+
+msgid "Viability (%)"
+msgstr "存活率 (%)"
+
+msgid "Research Use Only"
+msgstr "仅供研究用途"
+
+msgid "Yes"
+msgstr "是"
+
+msgid "No"
+msgstr "否"
+
+msgid "Storage & Dates"
+msgstr "存储与日期"
+
+msgid "Storage Location"
+msgstr "存储位置"
+
+msgid "Collection Date"
+msgstr "采集日期"
+
+msgid "Storage Date"
+msgstr "存储日期"
+
+msgid "Expiration Date"
+msgstr "有效期至"
+
+msgid "Source"
+msgstr "来源"
+
+msgid "Donor Information"
+msgstr "捐赠者信息"
+
+msgid "Quality Control Notes"
+msgstr "质量控制备注"
+
+msgid "Sample Image"
+msgstr "样本图片"
+
+msgid "Metadata"
+msgstr "元数据"
+
+msgid "Created By"
+msgstr "创建者"
+
+msgid "Created At"
+msgstr "创建时间"
+
+msgid "Updated At"
+msgstr "更新时间"
+
+msgid "Edit Sample"
+msgstr "编辑样本"
+
+msgid "Delete Sample"
+msgstr "删除样本"
+
+msgid "Back to List"
+msgstr "返回列表"
+
+# History
+msgid "Date"
+msgstr "日期"
+
+msgid "User"
+msgstr "用户"
+
+msgid "Action"
+msgstr "操作"
+
+msgid "Changes"
+msgstr "变更"
+
+msgid "Created"
+msgstr "已创建"
+
+msgid "Modified"
+msgstr "已修改"
+
+msgid "Deleted"
+msgstr "已删除"
+
+msgid "Initial creation"
+msgstr "初始创建"
+
+msgid "No history available"
+msgstr "无历史记录"
+
+# Forms
+msgid "Add New Sample"
+msgstr "新增样本"
+
+msgid "Edit Sample: %(sample_id)s"
+msgstr "编辑样本：%(sample_id)s"
+
+msgid "Create Sample"
+msgstr "创建样本"
+
+msgid "Update Sample"
+msgstr "更新样本"
+
+msgid "New Sample"
+msgstr "新样本"
+
+msgid "Please correct the errors below."
+msgstr "请修正以下错误。"
+
+msgid "Source Information"
+msgstr "来源信息"
+
+msgid "Storage Information"
+msgstr "存储信息"
+
+msgid "Passage #"
+msgstr "传代数"
+
+msgid "Dates"
+msgstr "日期"
+
+msgid "Quality Control"
+msgstr "质量控制"
+
+msgid "Additional Information"
+msgstr "附加信息"
+
+msgid "Current image:"
+msgstr "当前图片："
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "e.g., IPSC-2024-001"
+msgstr "例如：IPSC-2024-001"
+
+msgid "Sample name"
+msgstr "样本名称"
+
+msgid "Detailed description of the sample"
+msgstr "样本的详细描述"
+
+msgid "Source institution or lab"
+msgstr "来源机构或实验室"
+
+msgid "Donor information and consent details"
+msgstr "捐赠者信息和同意书详情"
+
+msgid "e.g., Freezer A, Rack 3, Box 12"
+msgstr "例如：冷冻柜A，架子3，盒12"
+
+msgid "Percentage (0-100)"
+msgstr "百分比 (0-100)"
+
+msgid "Quality control test results and notes"
+msgstr "质量控制测试结果和备注"
+
+msgid "Viability must be between 0 and 100%"
+msgstr "存活率必须在0到100%之间"
+
+msgid "Quantity cannot be negative"
+msgstr "数量不能为负数"
+
+msgid "Expiration date cannot be before collection date"
+msgstr "有效期不能早于采集日期"
+
+msgid "Storage date cannot be before collection date"
+msgstr "存储日期不能早于采集日期"
+
+# Delete Confirmation
+msgid "Confirm Deletion"
+msgstr "确认删除"
+
+msgid "This action cannot be undone. All history for this sample will also be deleted."
+msgstr "此操作无法撤销。该样本的所有历史记录也将被删除。"
+
+# Export
+msgid "Export Samples"
+msgstr "导出样本"
+
+msgid "Select the columns you want to export:"
+msgstr "选择要导出的字段："
+
+msgid "Source & Quality"
+msgstr "来源与质量"
+
+msgid "Donor Info"
+msgstr "捐赠者信息"
+
+msgid "QC Notes"
+msgstr "质控备注"
+
+msgid "This will export all filtered samples."
+msgstr "这将导出所有筛选的样本。"
+
+msgid "Exporting"
+msgstr "正在导出"
+
+msgid "selected sample(s)."
+msgstr "个选中的样本。"
+
+msgid "Export to Excel"
+msgstr "导出至 Excel"
+
+# Site Settings
+msgid "Site Configuration"
+msgstr "网站设置"
+
+msgid "Site Logo"
+msgstr "网站标志"
+
+msgid "Upload Logo"
+msgstr "上传标志"
+
+msgid "Recommended size: 80x80 pixels. Supports JPG, PNG, GIF."
+msgstr "建议尺寸：80x80像素。支持 JPG、PNG、GIF 格式。"
+
+msgid "Current Logo"
+msgstr "当前标志"
+
+msgid "Preview"
+msgstr "预览"
+
+msgid "Default icon"
+msgstr "默认图标"
+
+msgid "Site Names"
+msgstr "网站名称"
+
+msgid "English Name"
+msgstr "英文名称"
+
+msgid "Traditional Chinese Name"
+msgstr "繁体中文名称"
+
+msgid "Simplified Chinese Name"
+msgstr "简体中文名称"
+
+msgid "Save Settings"
+msgstr "保存设置"
+
+msgid "Site settings updated successfully!"
+msgstr "网站设置已成功更新！"
+
+# Success Messages
+msgid "Sample %(sample_id)s created successfully!"
+msgstr "样本 %(sample_id)s 创建成功！"
+
+msgid "Sample %(sample_id)s updated successfully!"
+msgstr "样本 %(sample_id)s 更新成功！"
+
+msgid "Sample %(sample_id)s deleted successfully!"
+msgstr "样本 %(sample_id)s 删除成功！"
+

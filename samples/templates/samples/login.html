@@ -1,64 +1,227 @@
 {% extends 'samples/base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
-{% block title %}Login - Stem Cell Resource Bank{% endblock %}
+{% block title %}{% trans "Login" %} - {{ site_name }}{% endblock %}
 
-{% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow-lg">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-shield-lock-fill" style="font-size: 4rem; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
-                        <h2 class="fw-bold mt-3">Staff Login</h2>
-                        <p class="text-muted">Access the sample management system</p>
-                    </div>
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">
-                                <i class="bi bi-person-fill"></i> Username
-                            </label>
-                            <input type="text" 
-                                   name="{{ form.username.name }}" 
-                                   class="form-control form-control-lg" 
-                                   id="{{ form.username.id_for_label }}"
-                                   required
-                                   autofocus>
+{% block public_content %}
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo and Title -->
+            <div class="login-header">
+                {% if site_settings.logo %}
+                <img src="{{ site_settings.logo.url }}" alt="Logo" class="login-logo">
+                {% else %}
+                <div class="login-logo-placeholder">
+                    <i class="bi bi-droplet-fill"></i>
+                </div>
+                {% endif %}
+                <h1 class="login-title">{{ site_name }}</h1>
+                <p class="login-subtitle">{% trans "Please sign in to continue" %}</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                        
-                        <div class="mb-4">
-                            <label for="{{ form.password.id_for_label }}" class="form-label">
-                                <i class="bi bi-lock-fill"></i> Password
-                            </label>
-                            <input type="password" 
-                                   name="{{ form.password.name }}" 
-                                   class="form-control form-control-lg" 
-                                   id="{{ form.password.id_for_label }}"
-                                   required>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </button>
-                    </form>
-                    
-                    <hr class="my-4">
-                    
-                    <div class="text-center">
-                        <p class="text-muted mb-0">
-                            <small>
-                                <i class="bi bi-info-circle-fill"></i> 
-                                For public access, visit the 
-                                <a href="{% url 'public_sample_list' %}">public view</a>
-                            </small>
-                        </p>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">{% trans "Username" %}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username" 
+                               class="form-control" 
+                               placeholder="{% trans 'Enter your username' %}"
+                               required 
+                               autofocus>
                     </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_password" class="form-label">{% trans "Password" %}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password" 
+                               class="form-control" 
+                               placeholder="{% trans 'Enter your password' %}"
+                               required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Sign In" %}
+                </button>
+            </form>
+            
+            <!-- Language Selector -->
+            <div class="login-footer">
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-globe me-1"></i>
+                        {% if CURRENT_LANGUAGE == 'zh-Hant' %}繁體中文
+                        {% elif CURRENT_LANGUAGE == 'zh-Hans' %}简体中文
+                        {% else %}English{% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form action="{% url 'set_language' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="language" value="en">
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <button type="submit" class="dropdown-item {% if CURRENT_LANGUAGE == 'en' %}active{% endif %}">English</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="{% url 'set_language' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="language" value="zh-Hant">
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <button type="submit" class="dropdown-item {% if CURRENT_LANGUAGE == 'zh-Hant' %}active{% endif %}">繁體中文</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="{% url 'set_language' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="language" value="zh-Hans">
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <button type="submit" class="dropdown-item {% if CURRENT_LANGUAGE == 'zh-Hans' %}active{% endif %}">简体中文</button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1f2e 0%, #2d3548 50%, #1a1f2e 100%);
+        padding: 2rem;
+    }
+    
+    .login-container {
+        width: 100%;
+        max-width: 420px;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .login-logo {
+        height: 80px;
+        width: 80px;
+        object-fit: contain;
+        margin-bottom: 1rem;
+    }
+    
+    .login-logo-placeholder {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .login-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .login-subtitle {
+        color: #6c757d;
+        margin: 0;
+    }
+    
+    .login-form .form-label {
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .login-form .input-group-text {
+        background: #f8f9fa;
+        border-right: none;
+    }
+    
+    .login-form .form-control {
+        border-left: none;
+    }
+    
+    .login-form .form-control:focus {
+        border-color: #dee2e6;
+        box-shadow: none;
+    }
+    
+    .login-form .input-group:focus-within {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        border-radius: 8px;
+    }
+    
+    .login-form .input-group:focus-within .input-group-text,
+    .login-form .input-group:focus-within .form-control {
+        border-color: #0d6efd;
+    }
+    
+    .login-form .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    .login-footer .btn-link {
+        text-decoration: none;
+    }
+    
+    .login-footer .dropdown-menu form {
+        margin: 0;
+    }
+    
+    .login-footer .dropdown-menu button.dropdown-item {
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

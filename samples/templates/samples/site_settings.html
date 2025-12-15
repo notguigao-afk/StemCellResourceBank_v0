@@ -1,0 +1,89 @@
+{% extends 'samples/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Site Settings" %} - {{ site_name }}{% endblock %}
+
+{% block page_title %}{% trans "Site Settings" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-gear me-2"></i>{% trans "Site Configuration" %}
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Logo Section -->
+                    <h5 class="mb-3"><i class="bi bi-image text-primary me-2"></i>{% trans "Site Logo" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label for="{{ form.logo.id_for_label }}" class="form-label">{% trans "Upload Logo" %}</label>
+                            {{ form.logo }}
+                            <small class="form-text text-muted">
+                                {% trans "Recommended size: 80x80 pixels. Supports JPG, PNG, GIF." %}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            {% if settings.logo %}
+                            <label class="form-label">{% trans "Current Logo" %}</label>
+                            <div>
+                                <img src="{{ settings.logo.url }}" alt="Logo" class="img-thumbnail" style="max-height: 100px;">
+                            </div>
+                            {% else %}
+                            <label class="form-label">{% trans "Preview" %}</label>
+                            <div class="p-3 bg-light rounded">
+                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #0d6efd, #6610f2); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                    <i class="bi bi-droplet-fill text-white" style="font-size: 2rem;"></i>
+                                </div>
+                                <small class="text-muted mt-2 d-block">{% trans "Default icon" %}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Site Names -->
+                    <h5 class="mb-3"><i class="bi bi-globe text-primary me-2"></i>{% trans "Site Names" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label for="{{ form.site_name_en.id_for_label }}" class="form-label">
+                                {% trans "English Name" %}
+                            </label>
+                            {{ form.site_name_en }}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form.site_name_zh_hant.id_for_label }}" class="form-label">
+                                {% trans "Traditional Chinese Name" %} (繁體中文)
+                            </label>
+                            {{ form.site_name_zh_hant }}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form.site_name_zh_hans.id_for_label }}" class="form-label">
+                                {% trans "Simplified Chinese Name" %} (简体中文)
+                            </label>
+                            {{ form.site_name_zh_hans }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Submit Button -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'home' %}" class="btn btn-secondary">
+                            <i class="bi bi-x me-1"></i>{% trans "Cancel" %}
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check me-1"></i>{% trans "Save Settings" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

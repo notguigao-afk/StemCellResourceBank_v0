@@ -1,172 +1,212 @@
 {% extends 'samples/base.html' %}
+{% load i18n sample_tags %}
 
-{% block title %}Home - Stem Cell Resource Bank{% endblock %}
+{% block title %}{% trans "Dashboard" %} - {{ site_name }}{% endblock %}
+
+{% block page_title %}{% trans "Dashboard" %}{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="bg-white py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-3 fw-bold mb-4">
-                    Welcome to the<br>
-                    <span style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                        Stem Cell Resource Bank
-                    </span>
-                </h1>
-                <p class="lead text-muted mb-4">
-                    A comprehensive platform for managing and disseminating stem cell samples. 
-                    Empowering research through organized resource management.
-                </p>
-                <div class="d-flex gap-3">
-                    <a href="{% url 'public_sample_list' %}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-search"></i> Browse Samples
-                    </a>
-                    {% if not user.is_authenticated %}
-                    <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">
-                        <i class="bi bi-box-arrow-in-right"></i> Staff Login
-                    </a>
+<!-- Date Display -->
+<div class="mb-4">
+    <p class="text-muted mb-0">
+        <i class="bi bi-calendar3 me-2"></i>
+        {{ today|date:"l, F j, Y" }}
+    </p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+                <i class="bi bi-flask"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_samples }}</h3>
+                <p>{% trans "Total Samples" %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ available_samples }}</h3>
+                <p>{% trans "Available" %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ in_use_samples }}</h3>
+                <p>{% trans "In Use" %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ depleted_samples }}</h3>
+                <p>{% trans "Depleted" %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recently Modified Samples -->
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history me-2"></i>{% trans "Recently Modified" %}</span>
+                <a href="{% url 'sample_list' %}" class="btn btn-sm btn-outline-primary">{% trans "View All" %}</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_samples %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Sample ID" %}</th>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Status" %}</th>
+                                <th>{% trans "Updated" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sample in recent_samples %}
+                            <tr onclick="window.location='{% url 'sample_detail' sample.pk %}'" style="cursor: pointer;">
+                                <td><code>{{ sample.sample_id }}</code></td>
+                                <td>{{ sample.name|truncatewords:5 }}</td>
+                                <td>{{ sample.get_sample_type_display }}</td>
+                                <td><span class="badge bg-{{ sample.get_status_badge_class }}">{{ sample.get_status_display }}</span></td>
+                                <td><small class="text-muted">{{ sample.updated_at|timesince }} {% trans "ago" %}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-2">{% trans "No recent activity" %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats Sidebar -->
+    <div class="col-lg-4">
+        <!-- Samples by Type -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-pie-chart me-2"></i>{% trans "Samples by Type" %}
+            </div>
+            <div class="card-body">
+                {% if samples_by_type %}
+                    {% for item in samples_by_type %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ sample_types|get_item:item.sample_type }}</span>
+                        <span class="badge bg-primary">{{ item.count }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">{% trans "No samples yet" %}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Expiring Soon -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle text-warning me-2"></i>{% trans "Expiring Soon" %}
+            </div>
+            <div class="card-body">
+                {% if expiring_soon %}
+                    {% for sample in expiring_soon %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <a href="{% url 'sample_detail' sample.pk %}" class="text-decoration-none">{{ sample.sample_id }}</a>
+                        <small class="text-danger">{{ sample.expiration_date|date:"M d" }}</small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">{% trans "No samples expiring soon" %}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Low Stock -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-box-seam text-danger me-2"></i>{% trans "Low Stock" %}
+            </div>
+            <div class="card-body">
+                {% if low_stock %}
+                    {% for sample in low_stock %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <a href="{% url 'sample_detail' sample.pk %}" class="text-decoration-none">{{ sample.sample_id }}</a>
+                        <small class="text-warning">{{ sample.quantity }} {% trans "vials" %}</small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">{% trans "All samples well stocked" %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>{% trans "Quick Actions" %}
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'sample_create' %}" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-circle me-2"></i>{% trans "Add Sample" %}
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'sample_list' %}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-list me-2"></i>{% trans "View All" %}
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'export_samples' %}" class="btn btn-outline-success w-100">
+                            <i class="bi bi-download me-2"></i>{% trans "Export" %}
+                        </a>
+                    </div>
+                    {% if user.is_superuser %}
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'site_settings' %}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-gear me-2"></i>{% trans "Settings" %}
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
-            <div class="col-lg-5 text-center">
-                <i class="bi bi-droplet-fill" style="font-size: 15rem; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Statistics Section -->
-<div class="container my-5">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="stat-card text-center">
-                <i class="bi bi-flask-fill" style="font-size: 3rem;"></i>
-                <h3 class="mt-3">{{ total_samples }}</h3>
-                <p class="mb-0">Total Samples</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card text-center" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
-                <h3 class="mt-3">{{ available_samples }}</h3>
-                <p class="mb-0">Available Samples</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card text-center" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                <i class="bi bi-people-fill" style="font-size: 3rem;"></i>
-                <h3 class="mt-3">Public</h3>
-                <p class="mb-0">Access Level</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Features Section -->
-<div class="container my-5">
-    <h2 class="text-center mb-5 fw-bold">Key Features</h2>
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-database-fill text-primary" style="font-size: 3rem;"></i>
-                    <h5 class="card-title mt-3">Comprehensive Database</h5>
-                    <p class="card-text text-muted">Store detailed information about each stem cell sample</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-shield-lock-fill text-success" style="font-size: 3rem;"></i>
-                    <h5 class="card-title mt-3">Role-Based Access</h5>
-                    <p class="card-text text-muted">Different access levels for admin, staff, and public</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-eye-fill text-info" style="font-size: 3rem;"></i>
-                    <h5 class="card-title mt-3">Public Dissemination</h5>
-                    <p class="card-text text-muted">Read-only public view for research collaboration</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-search text-warning" style="font-size: 3rem;"></i>
-                    <h5 class="card-title mt-3">Advanced Search</h5>
-                    <p class="card-text text-muted">Filter and search samples by multiple criteria</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Recent Samples Section -->
-{% if recent_samples %}
-<div class="container my-5">
-    <h2 class="text-center mb-5 fw-bold">Recently Added Samples</h2>
-    <div class="row g-4">
-        {% for sample in recent_samples %}
-        <div class="col-md-4">
-            <div class="card h-100">
-                {% if sample.image %}
-                <img src="{{ sample.image.url }}" class="card-img-top" alt="{{ sample.name }}" style="height: 200px; object-fit: cover;">
-                {% else %}
-                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" 
-                     style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <i class="bi bi-flask-fill text-white" style="font-size: 4rem;"></i>
-                </div>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ sample.name }}</h5>
-                    <p class="card-text text-muted">
-                        <small><strong>ID:</strong> {{ sample.sample_id }}</small><br>
-                        <small><strong>Type:</strong> {{ sample.get_sample_type_display }}</small>
-                    </p>
-                    <span class="badge bg-{{ sample.get_status_badge_class }}">
-                        {{ sample.get_status_display }}
-                    </span>
-                    <a href="{% url 'public_sample_detail' sample.pk %}" class="btn btn-sm btn-outline-primary mt-2">
-                        <i class="bi bi-eye"></i> View Details
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="text-center mt-4">
-        <a href="{% url 'public_sample_list' %}" class="btn btn-primary">View All Samples</a>
-    </div>
-</div>
-{% endif %}
-
-<!-- Call to Action -->
-<div class="bg-white py-5 mt-5">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-4">Ready to Get Started?</h2>
-        <p class="lead text-muted mb-4">
-            Browse our collection of stem cell samples or log in to manage resources.
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'public_sample_list' %}" class="btn btn-primary btn-lg">
-                <i class="bi bi-search"></i> Browse Samples
-            </a>
-            {% if user.is_authenticated %}
-            <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary btn-lg">
-                <i class="bi bi-flask"></i> Manage Samples
-            </a>
-            {% else %}
-            <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">
-                <i class="bi bi-box-arrow-in-right"></i> Staff Login
-            </a>
-            {% endif %}
         </div>
     </div>
 </div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+// Add a custom template filter equivalent for JavaScript
+</script>
+{% endblock %}

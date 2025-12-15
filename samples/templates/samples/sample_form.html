@@ -1,249 +1,181 @@
 {% extends 'samples/base.html' %}
+{% load i18n %}
 
-{% block title %}{{ title }} - Stem Cell Resource Bank{% endblock %}
+{% block title %}{{ title }} - {{ site_name }}{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container my-4">
+<div class="mb-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'sample_list' %}">Manage Samples</a></li>
-            <li class="breadcrumb-item active">{{ title }}</li>
+            <li class="breadcrumb-item"><a href="{% url 'sample_list' %}">{% trans "Samples" %}</a></li>
+            {% if sample %}
+            <li class="breadcrumb-item"><a href="{% url 'sample_detail' sample.pk %}">{{ sample.sample_id }}</a></li>
+            <li class="breadcrumb-item active">{% trans "Edit" %}</li>
+            {% else %}
+            <li class="breadcrumb-item active">{% trans "New Sample" %}</li>
+            {% endif %}
         </ol>
     </nav>
-    
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">
-                        <i class="bi bi-{% if sample %}pencil{% else %}plus-circle{% endif %}"></i> 
-                        {{ title }}
-                    </h3>
-                </div>
-                <div class="card-body p-4">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <!-- Basic Information -->
-                        <h5 class="mb-3 text-primary">
-                            <i class="bi bi-info-circle-fill"></i> Basic Information
-                        </h5>
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.sample_id.id_for_label }}" class="form-label">
-                                    Sample ID <span class="text-danger">*</span>
-                                </label>
-                                {{ form.sample_id }}
-                                {% if form.sample_id.errors %}
-                                <div class="text-danger mt-1">{{ form.sample_id.errors }}</div>
-                                {% endif %}
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        {% trans "Please correct the errors below." %}
+                        <ul class="mb-0 mt-2">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Basic Information -->
+                    <h5 class="mb-3"><i class="bi bi-info-circle text-primary me-2"></i>{% trans "Basic Information" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.sample_id.id_for_label }}" class="form-label">{% trans "Sample ID" %} <span class="text-danger">*</span></label>
+                            {{ form.sample_id }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">{% trans "Sample Name" %} <span class="text-danger">*</span></label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.sample_type.id_for_label }}" class="form-label">{% trans "Sample Type" %}</label>
+                            {{ form.sample_type }}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">{% trans "Description" %}</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Source Information -->
+                    <h5 class="mb-3"><i class="bi bi-building text-primary me-2"></i>{% trans "Source Information" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="{{ form.source.id_for_label }}" class="form-label">{% trans "Source" %}</label>
+                            {{ form.source }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.donor_info.id_for_label }}" class="form-label">{% trans "Donor Information" %}</label>
+                            {{ form.donor_info }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Storage Information -->
+                    <h5 class="mb-3"><i class="bi bi-box-seam text-primary me-2"></i>{% trans "Storage Information" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.storage_location.id_for_label }}" class="form-label">{% trans "Storage Location" %} <span class="text-danger">*</span></label>
+                            {{ form.storage_location }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">{% trans "Status" %}</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-2">
+                            <label for="{{ form.quantity.id_for_label }}" class="form-label">{% trans "Quantity" %}</label>
+                            {{ form.quantity }}
+                        </div>
+                        <div class="col-md-2">
+                            <label for="{{ form.passage_number.id_for_label }}" class="form-label">{% trans "Passage #" %}</label>
+                            {{ form.passage_number }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Dates -->
+                    <h5 class="mb-3"><i class="bi bi-calendar text-primary me-2"></i>{% trans "Dates" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.collection_date.id_for_label }}" class="form-label">{% trans "Collection Date" %}</label>
+                            {{ form.collection_date }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.storage_date.id_for_label }}" class="form-label">{% trans "Storage Date" %}</label>
+                            {{ form.storage_date }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.expiration_date.id_for_label }}" class="form-label">{% trans "Expiration Date" %}</label>
+                            {{ form.expiration_date }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Quality Control -->
+                    <h5 class="mb-3"><i class="bi bi-clipboard-check text-primary me-2"></i>{% trans "Quality Control" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.viability.id_for_label }}" class="form-label">{% trans "Viability (%)" %}</label>
+                            {{ form.viability }}
+                        </div>
+                        <div class="col-md-8">
+                            <label for="{{ form.quality_control_notes.id_for_label }}" class="form-label">{% trans "Quality Control Notes" %}</label>
+                            {{ form.quality_control_notes }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Additional Information -->
+                    <h5 class="mb-3"><i class="bi bi-plus-circle text-primary me-2"></i>{% trans "Additional Information" %}</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">{% trans "Sample Image" %}</label>
+                            {{ form.image }}
+                            {% if sample.image %}
+                            <div class="mt-2">
+                                <small class="text-muted">{% trans "Current image:" %}</small><br>
+                                <img src="{{ sample.image.url }}" alt="{{ sample.name }}" class="img-thumbnail mt-1" style="max-height: 100px;">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.name.id_for_label }}" class="form-label">
-                                    Sample Name <span class="text-danger">*</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                {{ form.research_use_only }}
+                                <label class="form-check-label" for="{{ form.research_use_only.id_for_label }}">
+                                    {% trans "Research Use Only" %}
                                 </label>
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                <div class="text-danger mt-1">{{ form.name.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.sample_type.id_for_label }}" class="form-label">
-                                    Sample Type <span class="text-danger">*</span>
-                                </label>
-                                {{ form.sample_type }}
-                                {% if form.sample_type.errors %}
-                                <div class="text-danger mt-1">{{ form.sample_type.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.status.id_for_label }}" class="form-label">
-                                    Status <span class="text-danger">*</span>
-                                </label>
-                                {{ form.status }}
-                                {% if form.status.errors %}
-                                <div class="text-danger mt-1">{{ form.status.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="{{ form.description.id_for_label }}" class="form-label">
-                                    Description
-                                </label>
-                                {{ form.description }}
-                                {% if form.description.errors %}
-                                <div class="text-danger mt-1">{{ form.description.errors }}</div>
-                                {% endif %}
                             </div>
                         </div>
-                        
-                        <!-- Source & Storage -->
-                        <h5 class="mb-3 text-success">
-                            <i class="bi bi-geo-alt-fill"></i> Source & Storage
-                        </h5>
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.source.id_for_label }}" class="form-label">
-                                    Source
-                                </label>
-                                {{ form.source }}
-                                {% if form.source.errors %}
-                                <div class="text-danger mt-1">{{ form.source.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.storage_location.id_for_label }}" class="form-label">
-                                    Storage Location <span class="text-danger">*</span>
-                                </label>
-                                {{ form.storage_location }}
-                                {% if form.storage_location.errors %}
-                                <div class="text-danger mt-1">{{ form.storage_location.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="{{ form.donor_info.id_for_label }}" class="form-label">
-                                    Donor Information
-                                </label>
-                                {{ form.donor_info }}
-                                {% if form.donor_info.errors %}
-                                <div class="text-danger mt-1">{{ form.donor_info.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <!-- Quantity & Passage -->
-                        <h5 class="mb-3 text-info">
-                            <i class="bi bi-droplet-fill"></i> Quantity & Passage
-                        </h5>
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.quantity.id_for_label }}" class="form-label">
-                                    Quantity (vials) <span class="text-danger">*</span>
-                                </label>
-                                {{ form.quantity }}
-                                {% if form.quantity.errors %}
-                                <div class="text-danger mt-1">{{ form.quantity.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.passage_number.id_for_label }}" class="form-label">
-                                    Passage Number
-                                </label>
-                                {{ form.passage_number }}
-                                {% if form.passage_number.errors %}
-                                <div class="text-danger mt-1">{{ form.passage_number.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <!-- Dates -->
-                        <h5 class="mb-3 text-warning">
-                            <i class="bi bi-calendar-fill"></i> Important Dates
-                        </h5>
-                        <div class="row mb-4">
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.collection_date.id_for_label }}" class="form-label">
-                                    Collection Date
-                                </label>
-                                {{ form.collection_date }}
-                                {% if form.collection_date.errors %}
-                                <div class="text-danger mt-1">{{ form.collection_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.storage_date.id_for_label }}" class="form-label">
-                                    Storage Date <span class="text-danger">*</span>
-                                </label>
-                                {{ form.storage_date }}
-                                {% if form.storage_date.errors %}
-                                <div class="text-danger mt-1">{{ form.storage_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.expiration_date.id_for_label }}" class="form-label">
-                                    Expiration Date
-                                </label>
-                                {{ form.expiration_date }}
-                                {% if form.expiration_date.errors %}
-                                <div class="text-danger mt-1">{{ form.expiration_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <!-- Quality -->
-                        <h5 class="mb-3 text-danger">
-                            <i class="bi bi-clipboard2-check-fill"></i> Quality Control
-                        </h5>
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.viability.id_for_label }}" class="form-label">
-                                    Viability (%)
-                                </label>
-                                {{ form.viability }}
-                                {% if form.viability.errors %}
-                                <div class="text-danger mt-1">{{ form.viability.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="{{ form.quality_control_notes.id_for_label }}" class="form-label">
-                                    Quality Control Notes
-                                </label>
-                                {{ form.quality_control_notes }}
-                                {% if form.quality_control_notes.errors %}
-                                <div class="text-danger mt-1">{{ form.quality_control_notes.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <!-- Additional -->
-                        <h5 class="mb-3 text-secondary">
-                            <i class="bi bi-shield-check-fill"></i> Additional Information
-                        </h5>
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-check">
-                                    {{ form.research_use_only }}
-                                    <label class="form-check-label" for="{{ form.research_use_only.id_for_label }}">
-                                        Research Use Only
-                                    </label>
-                                </div>
-                                {% if form.research_use_only.errors %}
-                                <div class="text-danger mt-1">{{ form.research_use_only.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.image.id_for_label }}" class="form-label">
-                                    Sample Image
-                                </label>
-                                {{ form.image }}
-                                {% if form.image.errors %}
-                                <div class="text-danger mt-1">{{ form.image.errors }}</div>
-                                {% endif %}
-                                {% if sample and sample.image %}
-                                <div class="mt-2">
-                                    <small class="text-muted">Current image:</small>
-                                    <img src="{{ sample.image.url }}" alt="{{ sample.name }}" class="img-thumbnail mt-1" style="max-height: 100px;">
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <!-- Form Actions -->
-                        <hr>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-save"></i> {{ button_text }}
-                            </button>
-                            <a href="{% if sample %}{% url 'sample_detail' sample.pk %}{% else %}{% url 'sample_list' %}{% endif %}" 
-                               class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-x-circle"></i> Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Submit Buttons -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% if sample %}{% url 'sample_detail' sample.pk %}{% else %}{% url 'sample_list' %}{% endif %}" class="btn btn-secondary">
+                            <i class="bi bi-x me-1"></i>{% trans "Cancel" %}
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check me-1"></i>{{ button_text }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-

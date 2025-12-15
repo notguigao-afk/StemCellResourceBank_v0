@@ -1,203 +1,265 @@
 {% extends 'samples/base.html' %}
+{% load i18n %}
 
-{% block title %}{{ sample.name }} - Stem Cell Resource Bank{% endblock %}
+{% block title %}{{ sample.sample_id }} - {{ site_name }}{% endblock %}
+
+{% block page_title %}{% trans "Sample Details" %}{% endblock %}
 
 {% block content %}
-<div class="container my-4">
+<div class="mb-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'sample_list' %}">Manage Samples</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'sample_list' %}">{% trans "Samples" %}</a></li>
             <li class="breadcrumb-item active">{{ sample.sample_id }}</li>
         </ol>
     </nav>
-    
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card">
-                {% if sample.image %}
-                <img src="{{ sample.image.url }}" class="card-img-top" alt="{{ sample.name }}">
-                {% else %}
-                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" 
-                     style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <i class="bi bi-flask-fill text-white" style="font-size: 6rem;"></i>
-                </div>
-                {% endif %}
-                <div class="card-body text-center">
-                    <h4 class="card-title">{{ sample.name }}</h4>
-                    <p class="text-muted">{{ sample.sample_id }}</p>
-                    <span class="badge bg-{{ sample.get_status_badge_class }} fs-6">
-                        {{ sample.get_status_display }}
-                    </span>
-                </div>
-                <div class="card-footer">
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'sample_update' sample.pk %}" class="btn btn-warning">
-                            <i class="bi bi-pencil"></i> Edit Sample
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Main Info Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-flask me-2"></i>
+                    <strong>{{ sample.sample_id }}</strong>
+                </span>
+                <span class="badge bg-{{ sample.get_status_badge_class }} fs-6">{{ sample.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs" id="sampleTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab">
+                            <i class="bi bi-info-circle me-1"></i>{% trans "Information" %}
                         </a>
-                        <a href="{% url 'sample_delete' sample.pk %}" class="btn btn-outline-danger">
-                            <i class="bi bi-trash"></i> Delete Sample
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="history-tab" data-bs-toggle="tab" href="#history" role="tab">
+                            <i class="bi bi-clock-history me-1"></i>{% trans "History" %}
                         </a>
+                    </li>
+                </ul>
+                
+                <div class="tab-content pt-4" id="sampleTabContent">
+                    <!-- Information Tab -->
+                    <div class="tab-pane fade show active" id="info" role="tabpanel">
+                        <h5 class="mb-3">{{ sample.name }}</h5>
+                        
+                        {% if sample.description %}
+                        <p class="text-muted">{{ sample.description }}</p>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase small mb-3">{% trans "Basic Information" %}</h6>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="text-muted" style="width: 40%;">{% trans "Type" %}</td>
+                                        <td>{{ sample.get_sample_type_display }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Quantity" %}</td>
+                                        <td>{{ sample.quantity }} {% trans "vials" %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Passage Number" %}</td>
+                                        <td>{{ sample.passage_number|default:"-" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Viability" %}</td>
+                                        <td>
+                                            {% if sample.viability %}
+                                            <span class="{% if sample.viability >= 90 %}text-success{% elif sample.viability >= 70 %}text-warning{% else %}text-danger{% endif %}">
+                                                {{ sample.viability }}%
+                                            </span>
+                                            {% else %}-{% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Research Use Only" %}</td>
+                                        <td>
+                                            {% if sample.research_use_only %}
+                                            <i class="bi bi-check-circle text-success"></i> {% trans "Yes" %}
+                                            {% else %}
+                                            <i class="bi bi-x-circle text-danger"></i> {% trans "No" %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase small mb-3">{% trans "Storage & Dates" %}</h6>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="text-muted" style="width: 40%;">{% trans "Location" %}</td>
+                                        <td>{{ sample.storage_location }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Collection Date" %}</td>
+                                        <td>{{ sample.collection_date|date:"Y-m-d"|default:"-" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Storage Date" %}</td>
+                                        <td>{{ sample.storage_date|date:"Y-m-d"|default:"-" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">{% trans "Expiration Date" %}</td>
+                                        <td>
+                                            {% if sample.expiration_date %}
+                                            <span class="{% if sample.expiration_date < today %}text-danger{% endif %}">
+                                                {{ sample.expiration_date|date:"Y-m-d" }}
+                                            </span>
+                                            {% else %}-{% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {% if sample.source or sample.donor_info %}
+                        <hr>
+                        <div class="row g-4">
+                            {% if sample.source %}
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase small mb-2">{% trans "Source" %}</h6>
+                                <p>{{ sample.source }}</p>
+                            </div>
+                            {% endif %}
+                            {% if sample.donor_info %}
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase small mb-2">{% trans "Donor Information" %}</h6>
+                                <p>{{ sample.donor_info }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if sample.quality_control_notes %}
+                        <hr>
+                        <h6 class="text-muted text-uppercase small mb-2">{% trans "Quality Control Notes" %}</h6>
+                        <p>{{ sample.quality_control_notes }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- History Tab -->
+                    <div class="tab-pane fade" id="history" role="tabpanel">
+                        {% if history %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Date" %}</th>
+                                        <th>{% trans "User" %}</th>
+                                        <th>{% trans "Action" %}</th>
+                                        <th>{% trans "Changes" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in history %}
+                                    <tr>
+                                        <td><small>{{ record.history_date|date:"Y-m-d H:i" }}</small></td>
+                                        <td>{{ record.history_user|default:"-" }}</td>
+                                        <td>
+                                            {% if record.history_type == '+' %}
+                                            <span class="badge bg-success">{% trans "Created" %}</span>
+                                            {% elif record.history_type == '~' %}
+                                            <span class="badge bg-warning">{% trans "Modified" %}</span>
+                                            {% elif record.history_type == '-' %}
+                                            <span class="badge bg-danger">{% trans "Deleted" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if record.prev_record %}
+                                                {% with record.diff_against as delta %}
+                                                    {% if delta %}
+                                                        <small>
+                                                        {% for change in delta.changes %}
+                                                            <strong>{{ change.field }}:</strong>
+                                                            {{ change.old|default:"(empty)"|truncatewords:3 }} → {{ change.new|default:"(empty)"|truncatewords:3 }}
+                                                            {% if not forloop.last %}<br>{% endif %}
+                                                        {% endfor %}
+                                                        </small>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                            <small class="text-muted">{% trans "Initial creation" %}</small>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-clock-history" style="font-size: 3rem;"></i>
+                            <p class="mt-2">{% trans "No history available" %}</p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Image Card -->
+        {% if sample.image %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-image me-2"></i>{% trans "Sample Image" %}
+            </div>
+            <div class="card-body p-0">
+                <img src="{{ sample.image.url }}" alt="{{ sample.name }}" class="img-fluid rounded-bottom">
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Metadata Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>{% trans "Metadata" %}
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted">{% trans "Created By" %}</td>
+                        <td>{{ sample.created_by.username|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">{% trans "Created At" %}</td>
+                        <td>{{ sample.created_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">{% trans "Updated At" %}</td>
+                        <td>{{ sample.updated_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
         
-        <div class="col-lg-8">
-            <div class="card mb-3">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-info-circle-fill"></i> Basic Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Sample Type:</strong><br>
-                            <span class="text-muted">{{ sample.get_sample_type_display }}</span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Status:</strong><br>
-                            <span class="badge bg-{{ sample.get_status_badge_class }}">
-                                {{ sample.get_status_display }}
-                            </span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Quantity:</strong><br>
-                            <span class="text-muted">{{ sample.quantity }} vial{{ sample.quantity|pluralize }}</span>
-                        </div>
-                        {% if sample.passage_number %}
-                        <div class="col-md-6 mb-3">
-                            <strong>Passage Number:</strong><br>
-                            <span class="text-muted">{{ sample.passage_number }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="col-12">
-                            <strong>Description:</strong><br>
-                            <p class="text-muted">{{ sample.description|default:"No description available" }}</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Actions Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>{% trans "Actions" %}
             </div>
-            
-            <div class="card mb-3">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-geo-alt-fill"></i> Source & Storage</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% if sample.source %}
-                        <div class="col-md-6 mb-3">
-                            <strong>Source:</strong><br>
-                            <span class="text-muted">{{ sample.source }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="col-md-6 mb-3">
-                            <strong>Storage Location:</strong><br>
-                            <span class="text-muted">{{ sample.storage_location }}</span>
-                        </div>
-                        {% if sample.donor_info %}
-                        <div class="col-12">
-                            <strong>Donor Information:</strong><br>
-                            <p class="text-muted">{{ sample.donor_info }}</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="bi bi-calendar-fill"></i> Important Dates</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% if sample.collection_date %}
-                        <div class="col-md-4 mb-3">
-                            <strong>Collection Date:</strong><br>
-                            <span class="text-muted">{{ sample.collection_date|date:"M d, Y" }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="col-md-4 mb-3">
-                            <strong>Storage Date:</strong><br>
-                            <span class="text-muted">{{ sample.storage_date|date:"M d, Y" }}</span>
-                        </div>
-                        {% if sample.expiration_date %}
-                        <div class="col-md-4 mb-3">
-                            <strong>Expiration Date:</strong><br>
-                            <span class="text-muted">{{ sample.expiration_date|date:"M d, Y" }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            {% if sample.viability or sample.quality_control_notes %}
-            <div class="card mb-3">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-clipboard2-check-fill"></i> Quality Information</h5>
-                </div>
-                <div class="card-body">
-                    {% if sample.viability %}
-                    <div class="mb-3">
-                        <strong>Viability:</strong><br>
-                        <div class="progress" style="height: 25px;">
-                            <div class="progress-bar bg-success" 
-                                 role="progressbar" 
-                                 style="width: {{ sample.viability }}%"
-                                 aria-valuenow="{{ sample.viability }}" 
-                                 aria-valuemin="0" 
-                                 aria-valuemax="100">
-                                {{ sample.viability }}%
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% if sample.quality_control_notes %}
-                    <div>
-                        <strong>Quality Control Notes:</strong><br>
-                        <p class="text-muted">{{ sample.quality_control_notes }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-            
-            <div class="card mb-3">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0"><i class="bi bi-shield-check-fill"></i> Additional Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <strong>Research Use Only:</strong>
-                            {% if sample.research_use_only %}
-                            <span class="badge bg-warning">Yes</span>
-                            {% else %}
-                            <span class="badge bg-success">No</span>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <strong>Created By:</strong>
-                            <span class="text-muted">{{ sample.created_by.username|default:"N/A" }}</span>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Created:</strong>
-                            <span class="text-muted">{{ sample.created_at|date:"M d, Y g:i A" }}</span>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Last Updated:</strong>
-                            <span class="text-muted">{{ sample.updated_at|date:"M d, Y g:i A" }}</span>
-                        </div>
-                    </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'sample_update' sample.pk %}" class="btn btn-primary">
+                        <i class="bi bi-pencil me-2"></i>{% trans "Edit Sample" %}
+                    </a>
+                    <a href="{% url 'sample_delete' sample.pk %}" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-2"></i>{% trans "Delete Sample" %}
+                    </a>
+                    <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>{% trans "Back to List" %}
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="mt-4">
-        <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Sample List
-        </a>
-    </div>
 </div>
 {% endblock %}
-
