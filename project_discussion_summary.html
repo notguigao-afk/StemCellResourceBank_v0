@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Discussion Summary</title>
+  <style>
+    :root {
+      --primary: #1f4b99;
+      --accent: #2563eb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      padding: 32px 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+    header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+    main {
+      max-width: 980px;
+      margin: 24px auto 48px;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      margin-bottom: 18px;
+    }
+    h2 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 20px;
+    }
+    h3 {
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 16px;
+    }
+    ul {
+      margin: 8px 0 0 20px;
+    }
+    .tag {
+      display: inline-block;
+      background: #e5efff;
+      color: #1e3a8a;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Project Discussion Summary</h1>
+    <p>Key points from our evaluation and Q&A about the Django app</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1) Project Snapshot</h2>
+      <p><strong>Stack:</strong> Django 4.2, SQLite, server-rendered templates, role-based access, audit history, multilingual UI.</p>
+      <p><strong>Strengths:</strong> Clean models, form validation, role-based access, Excel export, audit trail, and good documentation.</p>
+    </section>
+
+    <section class="card">
+      <h2>2) Clarifications on Architecture Terms</h2>
+      <div class="grid">
+        <div>
+          <h3>“View complexity”</h3>
+          <p>Not UI style — it means the Python view function does many tasks at once (querying, formatting, exporting). This makes it harder to test/maintain.</p>
+        </div>
+        <div>
+          <h3>“Centralized” logic</h3>
+          <p>Put repeated logic in one reusable place (e.g., custom decorator or mixin for permission checks).</p>
+        </div>
+        <div>
+          <h3>“Large export function”</h3>
+          <p>Large = multiple responsibilities in one function. The Excel export handles filters, styling, conversions, and response creation in a single view.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3) Tests: Do You Need Them?</h2>
+      <p><strong>Not required</strong> for a small app, but highly recommended for professional habits.</p>
+      <ul>
+        <li>Test form validations (e.g., viability between 0–100).</li>
+        <li>Test login-required views (status codes).</li>
+        <li>Test sample creation and model rules.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>4) Business Logic vs Views</h2>
+      <p><strong>Business logic</strong> = rules/calculations like dashboard stats and export formatting. These can live in helper modules so views stay simple.</p>
+      <p class="note">This is a “next-level improvement,” not mandatory for a working app.</p>
+    </section>
+
+    <section class="card">
+      <h2>5) Security & Deployment (PythonAnywhere)</h2>
+      <h3>What’s already good</h3>
+      <ul>
+        <li>Django auth (hashed passwords, sessions)</li>
+        <li>Role-based access control</li>
+        <li>Audit history</li>
+      </ul>
+      <h3>Settings to double-check for production</h3>
+      <ul>
+        <li><code>DEBUG = False</code></li>
+        <li><code>SECRET_KEY</code> via environment variable</li>
+        <li><code>ALLOWED_HOSTS</code> set properly</li>
+        <li>Optional: <code>CSRF_COOKIE_SECURE</code>, <code>SESSION_COOKIE_SECURE</code>, <code>SECURE_SSL_REDIRECT</code></li>
+      </ul>
+      <p class="note">SQLite is OK for a small team, but not ideal for high concurrency.</p>
+    </section>
+
+    <section class="card">
+      <h2>6) PythonAnywhere Free Tier Capacity</h2>
+      <p>Beginner (free) tier limits (from PythonAnywhere pricing):</p>
+      <ul>
+        <li><strong>100 CPU-seconds/day</strong></li>
+        <li><strong>1 web app</strong> + <strong>1 web worker</strong> (requests queue)</li>
+        <li><strong>512MB disk</strong></li>
+      </ul>
+      <p><strong>Conclusion:</strong> Likely okay for a small team with light usage, but can feel slow or hit limits if users upload images/export often. Paid tier is safer for regular daily use.</p>
+    </section>
+
+    <section class="card">
+      <h2>7) Future Upgrades (Next.js / Better DB)</h2>
+      <p>Moving to Next.js is possible but not a simple switch:</p>
+      <ul>
+        <li>Django becomes API backend (e.g., Django REST Framework)</li>
+        <li>Next.js becomes the frontend (rebuild templates as React pages)</li>
+        <li>Models and data can remain</li>
+      </ul>
+      <p class="note">For a beginner, keep the current Django structure until you want a modern frontend or API-first architecture.</p>
+    </section>
+
+    <section class="card">
+      <h2>8) Suggested Next Steps (Optional)</h2>
+      <ul>
+        <li>Decide if free-tier is enough for your daily usage.</li>
+        <li>Set production security flags in <code>settings.py</code>.</li>
+        <li>Consider a paid PythonAnywhere plan if usage grows.</li>
+        <li>Add a few basic tests to build confidence.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
